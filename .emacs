@@ -9,19 +9,37 @@
 (show-paren-mode   1)
 
 (add-hook 'c-mode-hook (function (lambda ()
-	(modify-syntax-entry ?_ "word"))))
+  (modify-syntax-entry ?_ "word"))))
+
+(put 'kill-ring-save 'interactive-form
+     '(interactive
+       (if (use-region-p)
+           (list (region-beginning) (region-end))
+         (list (line-beginning-position) (line-beginning-position 2)))))
+
+(put 'kill-region 'interactive-form
+     '(interactive
+       (if (use-region-p)
+           (list (region-beginning) (region-end))
+         (list (line-beginning-position) (line-beginning-position 2)))))
+
+(put 'comment-region 'interactive-form
+     '(interactive
+       (if (use-region-p)
+           (list (region-beginning) (region-end))
+         (list (line-beginning-position) (line-beginning-position 2)))))
 
 (defun inc-number ()
-		(interactive)
-		(let ((end (search-forward-regexp "[0-9]+"))
-			  (beg (search-backward-regexp "[^0-9]+")))
-			(forward-char 1)
-			(insert 
-				(number-to-string
-					(+ 1 (string-to-number 
-						 (delete-and-extract-region (+ beg 1) end)))))
-			(backward-char 1)))
-			
+    (interactive)
+    (let ((end (search-forward-regexp "[0-9]+"))
+        (beg (search-backward-regexp "[^0-9]+")))
+      (forward-char 1)
+      (insert 
+        (number-to-string
+          (+ 1 (string-to-number 
+             (delete-and-extract-region (+ beg 1) end)))))
+      (backward-char 1)))
+      
 (global-set-key "\C-q" 'inc-number)
 
 (defun toggle-fullscreen ()
@@ -38,20 +56,14 @@
 (global-set-key (kbd "M-<f11>") 'color-theme-charcoal-black) ;; Alt-f11
 (global-set-key (kbd "M-<f12>") 'color-theme-almost-monokai) ;; Alt-f12
 
-;;
-(global-set-key "\C-x\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
-(global-set-key "\C-c\C-m" 'execute-extended-command)
-
 (global-set-key (kbd "C-?") 'undo)
 
-(global-set-key [M-left] 'windmove-left)          ; move to left windnow
-(global-set-key [M-right] 'windmove-right)        ; move to right window
-(global-set-key [M-up] 'windmove-up)              ; move to upper window
-(global-set-key [M-down] 'windmove-down)          ; move to downer window
+(global-set-key [M-left]  'windmove-left)          ; move to left windnow
+(global-set-key [M-right] 'windmove-right)         ; move to right window
+(global-set-key [M-up]    'windmove-up)            ; move to upper window
+(global-set-key [M-down]  'windmove-down)          ; move to downer window
 
-(setq scroll-step 1) ;; keyboard scroll one line at a time
-(set-variable `scroll-step 1)
+(set-variable 'scroll-step 1)
 
 ;;AutoPair
 (require 'autopair)
@@ -60,9 +72,19 @@
 ;;Server-Mode
 (server-start)
 
+(defun my-revert-buffer ()
+        (interactive)
+        (revert-buffer nil t))
+
+(global-set-key "\C-c\C-r" 'my-revert-buffer)
+(global-set-key "\C-cr"    'my-revert-buffer)
+(global-set-key "\C-cn"    'linum-mode)
+(global-set-key "\C-c\C-n" 'linum-mode)
+
 (setq c-default-style "linux")
 (setq-default c-basic-offset 4
                    tab-width 4
                    indent-tabs-mode t)
+
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
